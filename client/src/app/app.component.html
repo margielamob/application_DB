@@ -1,0 +1,14 @@
+<div>
+  <nav class="navbar navbar-dark bg-dark main-nav">
+    <a class="navbar-brand title" href="/" matTooltip="Retournez à l'accueil">INF3710 - TP4</a>
+  </nav>
+
+  <div class="home" *ngIf="route == ''">
+    <p>
+      PolyCoop
+    </p>
+    <button mat-raised-button color="primary" class="btn" routerLink=reservations  matTooltip="See and make reservations">Reservations<mat-icon>event</mat-icon></button>
+    <button mat-raised-button color="primary" class="btn" routerLink=member  matTooltip="Lookup a member">Members<mat-icon>group</mat-icon></button>
+  </div>
+  <router-outlet></router-outlet>
+</div>

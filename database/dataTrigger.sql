@@ -1,0 +1,2 @@
+INSERT INTO "CARPOOLDB".Vehicle (plate, commissioningDate, gasMileage, odometer, type, brand, model, originalLocation) 
+VALUES ('XYZ786', '2020-01-01', 35.0, 150000, 'Hybrid', 'Toyota', 'Prius', 'Toronto');

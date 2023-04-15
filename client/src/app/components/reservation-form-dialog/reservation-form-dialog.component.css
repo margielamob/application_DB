@@ -1,0 +1,38 @@
+/* General form styles */
+.stepper {
+  padding: 5px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Style for mat-form-field */
+  mat-form-field {
+    width: 100%;
+  }
+  
+  /* Style for submit button */
+  .submit-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* Style for form title */
+  .form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  
+  /* Style for mat-dialog container */
+  .mat-dialog-container {
+    padding: 20px;
+  }
+  

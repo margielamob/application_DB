@@ -1,0 +1,70 @@
+<mat-dialog-content class="form">
+    <mat-horizontal-stepper [linear]="true" #stepper>
+      <mat-step class="stepper" [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <ng-template matStepLabel class="stepper" >Member & Dates</ng-template>
+          
+          <mat-form-field appearance="fill" style="padding-top: 5px;">
+            <mat-label>Member Number</mat-label>
+            <input matInput formControlName="membernum" placeholder="Member Number">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput readonly [ngxMatDatetimePicker]="startDatePicker" formControlName="startdate" placeholder="Start Date">
+                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #startDatePicker></ngx-mat-datetime-picker>
+            </mat-form-field>
+              
+            <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput readonly [ngxMatDatetimePicker]="endDatePicker" formControlName="enddate" placeholder="End Date">
+                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #endDatePicker></ngx-mat-datetime-picker>
+            </mat-form-field>
+  
+          <div>
+            <button mat-button matStepperNext (click)="retrieveVehicles()">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+          <ng-template matStepLabel>Choose Vehicle</ng-template>
+          
+          <mat-form-field appearance="fill" style="padding-top: 5px;">
+            <mat-label>Vehicle</mat-label>
+            <mat-select formControlName="vehicleplate">
+                <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.plate">
+                {{ vehicle.brand }} - {{ vehicle.model }} ({{ vehicle.plate }})
+                </mat-option>
+            </mat-select>
+            </mat-form-field>
+            <mat-form-field class="example-chip-list" appearance="fill">
+              <mat-label>Requirements</mat-label>
+              <mat-chip-grid #chipGrid aria-label="Add new">
+                <mat-chip-row *ngFor="let requirement of requirements"
+                              (removed)="remove(requirement)"
+                              [editable]="true"
+                              (edited)="edit(requirement, $event)"
+                              [aria-description]="'press enter to edit ' + requirement">
+                  {{requirement}}
+                  <button matChipRemove [attr.aria-label]="'remove ' + requirement">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input placeholder="Add new"
+                       [matChipInputFor]="chipGrid"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       [matChipInputAddOnBlur]="addOnBlur"
+                       (matChipInputTokenEnd)="add($event)"/>
+              </mat-chip-grid>
+            </mat-form-field>
+  
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="onSubmit()">Confirm</button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </mat-dialog-content>

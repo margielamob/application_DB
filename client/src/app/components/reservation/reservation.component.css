@@ -1,0 +1,50 @@
+.grid-container {
+    display: grid;
+    grid-template-areas: 
+      'header button'
+      'carousel carousel'
+      'nav nav';
+  }
+
+  main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .carousel {
+    grid-area: carousel;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-area: button;
+  }
+  h1 {
+    text-align: center;
+    grid-area: header;
+  }
+  
+  .reservation-cards {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  
+
+  
+  .carousel-navigation {
+    grid-area: nav;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+  }

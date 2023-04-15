@@ -1,0 +1,29 @@
+<main>
+    <div class="grid-container">
+      <h1>Current Reservations : {{ reservations.length }}</h1>
+      <div class="button">
+        <button mat-mini-fab matTooltip="Make a reservation" (click)="openReservationDialog()" color="primary"><mat-icon>add</mat-icon></button>
+      </div>
+      <div *ngIf="reservations && reservations.length > 0" class="carousel">
+        <div class="reservation-cards">
+          <mat-card class="card" *ngFor="let reservation of visibleReservations">
+            <mat-card-header>
+              {{ reservation.reservationid }}
+            </mat-card-header>
+            <mat-card-content>
+              <p>Member Number: {{ reservation.membernum }}</p>
+              <p>Start Date: {{ reservation.startdate }}</p>
+              <p>End Date: {{ reservation.enddate }}</p>
+              <p>Notes: {{ reservation.requirements }}</p>
+              <p>Vehicle Plate: {{ reservation.vehicleplate }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <div class="carousel-navigation">
+        <button mat-icon-button (click)="previousPage()"><mat-icon>arrow_back_ios</mat-icon></button>
+        <button mat-icon-button (click)="nextPage()"><mat-icon>arrow_forward_ios</mat-icon></button>
+      </div>
+    </div>
+  </main>
+  

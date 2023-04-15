@@ -1,0 +1,142 @@
+SET search_path = "CARPOOLDB";
+
+DROP SCHEMA IF EXISTS "CARPOOLDB" CASCADE;
+CREATE SCHEMA "CARPOOLDB";
+
+-- DROP DOMAIN IF EXISTS "CARPOOLDB".type;
+-- DROP DOMAIN IF EXISTS "CARPOOLDB".status;
+-- DROP DOMAIN IF EXISTS "CARPOOLDB".personhood;
+-- DROP TABLE IF EXISTS "CARPOOLDB".TypeVehicle;
+-- DROP TABLE IF EXISTS "CARPOOLDB".Vehicle;
+-- DROP TABLE IF EXISTS "CARPOOLDB".BrandModel;
+-- DROP TABLE IF EXISTS "CARPOOLDB".Location;
+-- DROP TABLE IF EXISTS "CARPOOLDB".Insurance;
+-- DROP TABLE IF EXISTS "CARPOOLDB".Reservation;
+-- DROP TABLE IF EXISTS "CARPOOLDB".Usage;
+-- DROP TABLE IF EXISTS "CARPOOLDB".CoopMember;
+-- DROP TABLE IF EXISTS "CARPOOLDB".CarSharingMember;
+
+CREATE DOMAIN "CARPOOLDB".type AS VARCHAR(7)
+	CHECK (VALUE IN ('Hybrid', 'Sedan', 'Minivan'));
+
+CREATE DOMAIN "CARPOOLDB".status AS VARCHAR(6)
+	CHECK (VALUE IN ('Paid', 'Unpaid'));
+
+CREATE DOMAIN "CARPOOLDB".personhood AS VARCHAR(8)
+	CHECK (VALUE IN ('Moral', 'Physical'));
+	
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".VehicleType (
+	type type,
+	kilowatts NUMERIC(3,0),
+	odometerLimit INT CHECK (odometerLimit >= 0 AND odometerLimit <= 999999) NOT NULL,
+	hourlyPrice NUMERIC(5,2) NOT NULL,
+	kilometerPrice NUMERIC(5,2) NOT NULL,
+	PRIMARY KEY (type),
+	CHECK ((type = 'Hybrid' AND kilowatts >= 0 AND kilowatts <= 999) OR (type != 'Hybrid' AND kilowatts IS NULL))
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".BrandModel (
+	model VARCHAR(20) NOT NULL,
+	brand VARCHAR(20) NOT NULL,
+	PRIMARY KEY (model, brand)
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Location (
+	name VARCHAR(50) NOT NULL,
+	postalCode VARCHAR(6) NOT NULL,
+	capacity INT NOT NULL,
+	map JSON NOT NULL,
+	PRIMARY KEY (name)
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Vehicle (
+	plate VARCHAR(6) NOT NULL,
+	commissioningDate DATE NOT NULL, 
+	gasMileage NUMERIC(3,1) NOT NULL,
+	odometer INT CHECK (odometer >= 0 AND odometer <= 999999) NOT NULL,
+	type type NOT NULL,
+	brand VARCHAR(20) NOT NULL,
+	model VARCHAR(20) NOT NULL,
+	originalLocation VARCHAR(50),
+	PRIMARY KEY (plate),
+	FOREIGN KEY (type) REFERENCES "CARPOOLDB".VehicleType(type) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (originalLocation) REFERENCES "CARPOOLDB".Location(name) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (model, brand) REFERENCES "CARPOOLDB".BrandModel(model, brand) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Insurance (
+	number VARCHAR(20),
+	startDate DATE NOT NULL,
+	dueDate DATE NOT NULL,
+	insurer VARCHAR(50) NOT NULL,
+	vehiclePlate VARCHAR(6) NOT NULL,
+	PRIMARY KEY (number),
+	FOREIGN KEY (vehiclePlate) REFERENCES "CARPOOLDB".Vehicle(plate) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Member (
+	memberNum VARCHAR(10),
+	favoriteLocation VARCHAR(50),
+	name VARCHAR(50) NOT NULL,
+	postalCode VARCHAR(6) NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	driverLicence VARCHAR (13) NOT NULL,
+	bankNumber VARCHAR(12) NOT NULL,
+	bankName VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NOT NULL,
+	PRIMARY KEY (memberNUM),
+	FOREIGN KEY (favoriteLocation) REFERENCES "CARPOOLDB".Location(name) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Reservation (
+	reservationID VARCHAR(10),
+	vehiclePlate VARCHAR(6) NOT NULL,
+	startDate TIMESTAMP NOT NULL,
+	endDate TIMESTAMP NOT NULL,
+	requirements VARCHAR(255),
+	memberNum VARCHAR(10),
+	PRIMARY KEY (reservationID),
+	FOREIGN KEY (memberNum) REFERENCES "CARPOOLDB".Member(memberNum) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (vehiclePlate) REFERENCES "CARPOOLDB".Vehicle(plate) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Invoice (
+	invoiceID VARCHAR(10),
+	memberNum VARCHAR(10) NOT NULL,
+	invoiceDate DATE NOT NULL,
+	deadline DATE NOT NULL,
+	total NUMERIC(6,2) NOT NULL,
+	status status NOT NULL,
+	PRIMARY KEY(invoiceID)
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".CoopMember (
+	memberNum VARCHAR (10),
+	amountShares NUMERIC(5,2) NOT NULL,
+	PRIMARY KEY (memberNum),
+	FOREIGN KEY(memberNum) REFERENCES "CARPOOLDB".Member(memberNum) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".CarSharingMember (
+	memberNum VARCHAR (10),
+	cotisation NUMERIC(5,2) NOT NULL,
+	lastAccident DATE,
+	birthDate DATE NOT NULL,
+	personhood personhood,
+	PRIMARY KEY (memberNum),
+	FOREIGN KEY(memberNum) REFERENCES "CARPOOLDB".Member(memberNum) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CARPOOLDB".Usage (
+	usageID VARCHAR(10),
+	reservationID VARCHAR(10),
+	invoiceID VARCHAR(10),
+	initOdometer INT CHECK (initOdometer >= 0 AND initOdometer <= 999999) NOT NULL,
+	finalOdometer INT CHECK (finalOdometer >= 0 AND finalOdometer <= 999999) NOT NULL,
+	duration INTERVAL,
+	distance INT,
+	PRIMARY KEY (usageID),
+	FOREIGN KEY (reservationID) REFERENCES "CARPOOLDB".Reservation(reservationID) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (invoiceID) REFERENCES "CARPOOLDB".Invoice(invoiceID) ON DELETE RESTRICT ON UPDATE CASCADE
+);
